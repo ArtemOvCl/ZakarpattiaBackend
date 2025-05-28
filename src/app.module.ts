@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
+import { EnvConfigModule } from './config/envConfig/envConfig.module';
+import { DatabaseModule } from './modules/database/database.module';
 
 import { AppController } from './app.controller';
 
 import { AppService } from './app.service';
 
-import { EnvConfigModule } from './config/envConfig/envConfig.module';
-
 @Module({
-  imports: [EnvConfigModule],
+  imports: [EnvConfigModule, DatabaseModule],
   controllers: [AppController],
   providers: [AppService],
 })

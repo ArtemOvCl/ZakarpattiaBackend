@@ -8,6 +8,7 @@ async function bootstrap() {
 
   const port = configService.get<number>('PORT');
 
+  console.log(port);
   console.log(process.env.NODE_ENV);
 
   await app.listen(port ?? 3000);
