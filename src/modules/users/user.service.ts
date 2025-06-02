@@ -64,11 +64,11 @@ export class UserService {
     return new UserForLogin(user);
   }
 
-  async deleteUnverifiedUsers() {
+  async deleteUnverifiedUsers() : Promise<void> {
     await this.userRepository.deleteUnverifiedUsers();
   }
 
-  async blockUser(userId: string) {
+  async blockUser(userId: string) : Promise<void> {
     await this.userRepository.blockUser(userId);
   }
 }

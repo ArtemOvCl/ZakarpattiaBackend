@@ -16,6 +16,7 @@ import { UserResponseDTO } from "../users/dto/UserResponseDTO";
 
 import { Payload, Tokens } from "./interfaces/Auth.types";
 import { LoginResponse } from "./dto/LoginResponseDTO.dto";
+import { UserForLogin } from "../users/dto/UserResponseDTO";
 
 @Injectable()
 export class AuthService {
@@ -34,13 +35,13 @@ export class AuthService {
         console.log(this.JWT_CONFIG);
     }
 
-    async register(registerDto: RegisterDTO) {
+    async register(registerDto: RegisterDTO) : Promise<UserResponseDTO> {
         const user = await this.userService.createUser(registerDto);
 
         return user;
     }
 
-    async login(loginDto: LoginDTO) {
+    async login(loginDto: LoginDTO) : Promise<LoginResponse> {
         const user = await this.validateUser(loginDto);
       
         const response: LoginResponse = { user: user };
@@ -52,8 +53,8 @@ export class AuthService {
         return response;
       }      
 
-    private async validateUser(loginDto: LoginDTO){
-        const user = await this.userService.getUserByEmail(loginDto.email);
+    private async validateUser(loginDto: LoginDTO) : Promise<UserForLogin> {
+        const user: UserForLogin = await this.userService.getUserByEmail(loginDto.email);
       
         const isValid = user && await bcrypt.compare(loginDto.password, user.hashedPassword);
       
@@ -62,7 +63,7 @@ export class AuthService {
         return user;
       }
 
-      private async generateToken(user: UserResponseDTO){
+      private async generateToken(user: UserResponseDTO) : Promise<Tokens> {
         const payload : Payload = { sub: user._id, role: user.role};
 
         const [accessToken, refreshToken] = await Promise.all([
@@ -85,7 +86,7 @@ export class AuthService {
         return tokens;
       }
 
-      async refresh(payload: Payload) {
+      async refresh(payload: Payload) : Promise<Tokens> {
         const user = await this.userService.getUserById(payload.sub);
 
         if (!user) throw new UnauthorizedException('User not found');

@@ -27,11 +27,11 @@ export class UserRepository {
     return user;
   }
 
-  async deleteUnverifiedUsers() {
+  async deleteUnverifiedUsers() : Promise<void> {
     await this.userModel.deleteMany({ isVerified: false });
   }
 
-  async blockUser(userId: string) {
+  async blockUser(userId: string) : Promise<void> {
     await this.userModel.findByIdAndUpdate(userId, { isBlocked: true });
   }
 }
