@@ -6,20 +6,22 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EnvEnum } from 'src/common/enums/EnvEnums';
 
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+
+
 @Module({
     imports: [
         PassportModule,
         JwtModule.registerAsync({
-            imports: [ConfigModule],
             useFactory: (configService: ConfigService) => ({
                 secret: configService.get<string>(EnvEnum.JWT_ACCESS_SECRET),
                 signOptions: { expiresIn: configService.get<string>(EnvEnum.JWT_ACCESS_DURATION) },
             }),
             inject: [ConfigService],
-        }),
-        ConfigModule,
+        })
     ],
-    providers: [JwtStrategy],
-    exports: [JwtModule, JwtStrategy],
+    controllers: [AuthController],
+    providers: [JwtStrategy, AuthService],
 })
 export class AuthModule {}
