@@ -17,9 +17,12 @@ export class UserResponseDTO {
 
   @ApiProperty()
   avatarUrl?: string;
-  
+
   @ApiProperty()
   createdAt?: Date;
+
+  @ApiProperty()
+  isVerified: boolean;
 
   constructor(user: User) {
     this._id = user._id.toString();
@@ -27,6 +30,7 @@ export class UserResponseDTO {
     this.email = user.email;
     this.role = user.roleId.name;
     this.createdAt = user.createdAt;
+    this.isVerified = user.isVerified;
   }
 }
 

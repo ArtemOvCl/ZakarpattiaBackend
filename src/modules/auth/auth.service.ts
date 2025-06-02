@@ -15,6 +15,7 @@ import * as bcrypt from "bcrypt";
 import { UserResponseDTO } from "../users/dto/UserResponseDTO";
 
 import { Payload, Tokens } from "./interfaces/Auth.types";
+import { LoginResponse } from "./dto/LoginResponseDTO.dto";
 
 @Injectable()
 export class AuthService {
@@ -36,19 +37,23 @@ export class AuthService {
     async register(registerDto: RegisterDTO) {
         const user = await this.userService.createUser(registerDto);
 
+        
+
         return user;
     }
 
     async login(loginDto: LoginDTO) {
         const user = await this.validateUser(loginDto);
-
-        const { hashedPassword, ...userWithoutPassword } = user;
-
-        if (!user.isVerified) return { user: userWithoutPassword, isVerified: false };
-
-        const tokens: Tokens = await this.generateToken(userWithoutPassword);
-        return { user: userWithoutPassword, isVerified: true, tokens };
-    }
+        const { hashedPassword, ...userData } = user;
+      
+        const response: LoginResponse = { user: userData, isVerified: user.isVerified };
+      
+        if (user.isVerified) {
+          response.tokens = await this.generateToken(userData);
+        }
+      
+        return response;
+      }      
 
     private async validateUser(loginDto: LoginDTO) {
         const user = await this.userService.getUserByEmail(loginDto.email);
@@ -60,23 +65,27 @@ export class AuthService {
         return user;
       }
 
-      private async generateToken(user: UserResponseDTO) {
-        const payload : Payload = { fullName: user.fullName, role: user.role, avatarUrl: user.avatarUrl };
+      private async generateToken(user: UserResponseDTO) : Promise<Tokens> {
+        const payload : Payload = { sub: user._id, role: user.role};
+
         const [accessToken, refreshToken] = await Promise.all([
             this.jwtService.sign(payload, {
                 secret: this.JWT_CONFIG.accessSecret,
                 expiresIn: this.JWT_CONFIG.accessDuration
             }),
+            
             this.jwtService.sign(payload, {
                 secret: this.JWT_CONFIG.refreshSecret,
                 expiresIn: this.JWT_CONFIG.refreshDuration
             })
         ]);
 
-        return {
+        const tokens : Tokens = {
             accessToken,
             refreshToken
         };
+
+        return tokens;
       }
       
 }

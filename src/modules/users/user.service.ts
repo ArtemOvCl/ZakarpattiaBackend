@@ -59,7 +59,7 @@ export class UserService {
   async getUserByEmail(email: string): Promise<UserForLogin> {
     const user = await this.userRepository.getUserByEmail(email);
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('Користувача не знайдено');
     }
     return new UserForLogin(user);
   }
