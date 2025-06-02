@@ -25,7 +25,7 @@ import { JwtRefreshStrategy } from './common/strategies/jwt-refresh.strategy';
             UserModule, 
             AuthModule, 
             RolesModule, 
-            ThrottlerModule.forRoot([{ ttl: 60, limit: 2 }]),
+            ThrottlerModule.forRoot([{ ttl: 60000, limit: 2 }]),
             JwtModule.register({}),
             PassportModule
           ],

@@ -22,13 +22,13 @@ export class AuthController {
         return this.authService.test();
     }
 
-    @Throttle({ default: { limit: 2, ttl: 60 } })
+    @Throttle({ default: { limit: 2, ttl: 10000 } })
     @Post('register')
     async register(@Body() dto: RegisterDTO) {
         return this.authService.register(dto);
     }
 
-    @Throttle({ default: { limit: 10, ttl: 60 } })
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     @Post('login')
     async login(@Body() dto: LoginDTO) {
         return this.authService.login(dto);
