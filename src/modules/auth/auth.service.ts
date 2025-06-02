@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
@@ -37,25 +37,22 @@ export class AuthService {
     async register(registerDto: RegisterDTO) {
         const user = await this.userService.createUser(registerDto);
 
-        
-
         return user;
     }
 
     async login(loginDto: LoginDTO) {
         const user = await this.validateUser(loginDto);
-        const { hashedPassword, ...userData } = user;
       
-        const response: LoginResponse = { user: userData, isVerified: user.isVerified };
+        const response: LoginResponse = { user: user };
       
         if (user.isVerified) {
-          response.tokens = await this.generateToken(userData);
+          response.tokens = await this.generateToken(user);
         }
       
         return response;
       }      
 
-    private async validateUser(loginDto: LoginDTO) {
+    private async validateUser(loginDto: LoginDTO){
         const user = await this.userService.getUserByEmail(loginDto.email);
       
         const isValid = user && await bcrypt.compare(loginDto.password, user.hashedPassword);
@@ -65,7 +62,7 @@ export class AuthService {
         return user;
       }
 
-      private async generateToken(user: UserResponseDTO) : Promise<Tokens> {
+      private async generateToken(user: UserResponseDTO){
         const payload : Payload = { sub: user._id, role: user.role};
 
         const [accessToken, refreshToken] = await Promise.all([
@@ -80,10 +77,20 @@ export class AuthService {
             })
         ]);
 
-        const tokens : Tokens = {
+        const tokens: Tokens = {
             accessToken,
             refreshToken
         };
+
+        return tokens;
+      }
+
+      async refresh(payload: Payload) {
+        const user = await this.userService.getUserById(payload.sub);
+
+        if (!user) throw new UnauthorizedException('User not found');
+
+        const tokens: Tokens = await this.generateToken(user);
 
         return tokens;
       }

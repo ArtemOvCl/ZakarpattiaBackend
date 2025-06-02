@@ -63,4 +63,12 @@ export class UserService {
     }
     return new UserForLogin(user);
   }
+
+  async deleteUnverifiedUsers() {
+    await this.userRepository.deleteUnverifiedUsers();
+  }
+
+  async blockUser(userId: string) {
+    await this.userRepository.blockUser(userId);
+  }
 }

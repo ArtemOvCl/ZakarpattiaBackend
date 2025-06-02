@@ -38,9 +38,6 @@ export class UserForLogin extends UserResponseDTO {
   @ApiProperty()
   hashedPassword: string;
 
-  @ApiProperty()
-  isVerified: boolean;
-
   constructor(user: User) {
     super(user);
     this.hashedPassword = user.hashedPassword;

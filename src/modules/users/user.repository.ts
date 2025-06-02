@@ -26,5 +26,13 @@ export class UserRepository {
     const user = await this.userModel.findOne({ email });
     return user;
   }
+
+  async deleteUnverifiedUsers() {
+    await this.userModel.deleteMany({ isVerified: false });
+  }
+
+  async blockUser(userId: string) {
+    await this.userModel.findByIdAndUpdate(userId, { isBlocked: true });
+  }
 }
 

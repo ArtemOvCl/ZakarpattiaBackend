@@ -3,6 +3,5 @@ import { Tokens } from "../interfaces/Auth.types";
 
 export interface LoginResponse {
     user: UserResponseDTO;
-    isVerified: boolean;
     tokens?: Tokens;
 }
