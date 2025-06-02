@@ -9,10 +9,19 @@ export class User {
   fullName: string;
 
   @Prop({ required: true })
+  avatarUrl?: string;
+  
+  @Prop({ required: true })
   email: string;
 
   @Prop({ required: true })
   hashedPassword: string;
+  
+  @Prop({ required: true, ref: 'Role' })
+  roleId: string;
+
+  @Prop({ required: true, default: false })
+  isVerified: boolean;
 
   createdAt?: Date;
 } 
