@@ -14,7 +14,7 @@ export class UserRepository {
   }
 
   async getAllUsers(): Promise<User[]> {
-    return this.userModel.find();
+    return this.userModel.find().populate('roleId');
   }
 
   async getUserById(id: string): Promise<User | null> {

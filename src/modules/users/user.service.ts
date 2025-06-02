@@ -1,11 +1,11 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
 
 import { UserRepository } from "./user.repository";
 
 import { RolesService } from "../roles/roles.service";
 
-import { UserResponseDTO } from "./dto/UserResponseDTO";
+import { UserResponseDTO, UserForLogin } from "./dto/UserResponseDTO";
 import { RegisterDTO } from "src/modules/auth/dto/RegisterDTO.dto";
 
 import { ROLES } from "src/common/enums/RolesEnum";
@@ -17,6 +17,10 @@ export class UserService {
   constructor(private readonly userRepository: UserRepository, private readonly roleService: RolesService) {}
 
   async createUser(registerDto: RegisterDTO): Promise<UserResponseDTO> {
+
+    const user = await this.userRepository.getUserByEmail(registerDto.email);
+
+    if (user) throw new BadRequestException("User already exists");
 
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
@@ -31,13 +35,16 @@ export class UserService {
       roleId: role._id
     };
 
-    const user = await this.userRepository.create(userToCreate);
+    console.log(userToCreate);
 
-    return new UserResponseDTO(user);
+    const createdUser = await this.userRepository.create(userToCreate);
+
+    return new UserResponseDTO(createdUser);
   }
 
   async getAllUsers(): Promise<UserResponseDTO[]> {
     const users = await this.userRepository.getAllUsers();
+    console.log(users);
     return users.map(user => new UserResponseDTO(user));
   }
 
@@ -49,11 +56,11 @@ export class UserService {
     return new UserResponseDTO(user);
   }
 
-  async getUserByEmail(email: string): Promise<UserResponseDTO> {
+  async getUserByEmail(email: string): Promise<UserForLogin> {
     const user = await this.userRepository.getUserByEmail(email);
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return new UserResponseDTO(user);
+    return new UserForLogin(user);
   }
 }

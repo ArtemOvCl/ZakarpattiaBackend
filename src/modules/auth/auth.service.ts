@@ -9,7 +9,12 @@ import { JwtConfig } from "src/config/envConfig/jwtConfig/jwt.config";
 import { EnvEnum } from "src/common/enums/EnvEnums";
 
 import { RegisterDTO } from "./dto/RegisterDTO.dto";
+import { LoginDTO } from "./dto/LoginDTO.dto";
 
+import * as bcrypt from "bcrypt";
+import { UserResponseDTO } from "../users/dto/UserResponseDTO";
+
+import { Payload, Tokens } from "./interfaces/Auth.types";
 
 @Injectable()
 export class AuthService {
@@ -31,10 +36,48 @@ export class AuthService {
     async register(registerDto: RegisterDTO) {
         const user = await this.userService.createUser(registerDto);
 
-        if (!user) throw new BadRequestException('User not created');
-
-
         return user;
     }
+
+    async login(loginDto: LoginDTO) {
+        const user = await this.validateUser(loginDto);
+
+        const { hashedPassword, ...userWithoutPassword } = user;
+
+        if (!user.isVerified) return { user: userWithoutPassword, isVerified: false };
+
+        const tokens: Tokens = await this.generateToken(userWithoutPassword);
+        return { user: userWithoutPassword, isVerified: true, tokens };
+    }
+
+    private async validateUser(loginDto: LoginDTO) {
+        const user = await this.userService.getUserByEmail(loginDto.email);
+      
+        const isValid = user && await bcrypt.compare(loginDto.password, user.hashedPassword);
+      
+        if (!isValid) throw new BadRequestException('Неправильні дані для входу');
+      
+        return user;
+      }
+
+      private async generateToken(user: UserResponseDTO) {
+        const payload : Payload = { fullName: user.fullName, role: user.role, avatarUrl: user.avatarUrl };
+        const [accessToken, refreshToken] = await Promise.all([
+            this.jwtService.sign(payload, {
+                secret: this.JWT_CONFIG.accessSecret,
+                expiresIn: this.JWT_CONFIG.accessDuration
+            }),
+            this.jwtService.sign(payload, {
+                secret: this.JWT_CONFIG.refreshSecret,
+                expiresIn: this.JWT_CONFIG.refreshDuration
+            })
+        ]);
+
+        return {
+            accessToken,
+            refreshToken
+        };
+      }
+      
 }
     
