@@ -1,7 +1,7 @@
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 
 @Schema({ timestamps: true })
-export class Role {
+export class RoleClassifier {
     
   _id: string;
 
@@ -9,4 +9,4 @@ export class Role {
   name: string;
 }
 
-export const RoleSchema = SchemaFactory.createForClass(Role);
+export const RoleClassifierSchema = SchemaFactory.createForClass(RoleClassifier);

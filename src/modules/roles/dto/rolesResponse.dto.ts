@@ -1,4 +1,4 @@
-import { Role } from "../roles.schema";
+import { RoleClassifier } from "../roles.schema";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class RolesResponseDto {
@@ -8,7 +8,7 @@ export class RolesResponseDto {
     @ApiProperty({ description: 'The name of the role' })
     roleName: string;
 
-    constructor(role: Role) {
+    constructor(role: RoleClassifier) {
         this._id = role._id;
         this.roleName = role.name;
     }

@@ -7,13 +7,17 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EnvEnum } from 'src/common/enums/EnvEnums';
 
 import { AuthController } from './auth.controller';
+
 import { AuthService } from './auth.service';
 
+import { UserModule } from '../users/user.module';
 
 @Module({
     imports: [
         PassportModule,
-        JwtModule],
+        JwtModule,
+        UserModule,
+    ],
     controllers: [AuthController],
     providers: [JwtStrategy, AuthService],
 })

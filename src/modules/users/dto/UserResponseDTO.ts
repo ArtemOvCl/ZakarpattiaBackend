@@ -13,13 +13,16 @@ export class UserResponseDTO {
   email: string;
 
   @ApiProperty()
+  role: string;
+
+  @ApiProperty()
   createdAt?: Date;
 
   constructor(user: User) {
-    console.log(user);
     this._id = user._id.toString();
     this.fullName = user.fullName;
     this.email = user.email;
+    this.role = user.roleId;
     this.createdAt = user.createdAt;
   }
 }
