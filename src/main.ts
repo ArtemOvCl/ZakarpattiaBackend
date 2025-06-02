@@ -5,7 +5,7 @@ import { setupSwagger } from './config/swaggerConfig/swagger.config';
 
 import { EnvEnum } from './common/enums/EnvEnums';
 
-import { GlobalExtensionsFilter } from './common/filters/GlobalExtensionsFilter';
+import { GlobalExceptionsFilter } from './common/filters/GlobalExcepsionsFilter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,7 +13,7 @@ async function bootstrap() {
 
   setupSwagger(app);
 
-  app.useGlobalFilters(new GlobalExtensionsFilter());
+  app.useGlobalFilters(new GlobalExceptionsFilter());
 
   const port = configService.get<number>(EnvEnum.PORT);
 

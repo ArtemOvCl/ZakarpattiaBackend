@@ -2,8 +2,8 @@ import { ExceptionFilter, Catch, ArgumentsHost, HttpException, Logger } from "@n
 import { Request, Response } from "express";
 
 @Catch(HttpException)
-export class GlobalExtensionsFilter implements ExceptionFilter {
-    private readonly logger = new Logger(GlobalExtensionsFilter.name);
+export class GlobalExceptionsFilter implements ExceptionFilter {
+    private readonly logger = new Logger(GlobalExceptionsFilter.name);
 
     catch(exception: HttpException, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
