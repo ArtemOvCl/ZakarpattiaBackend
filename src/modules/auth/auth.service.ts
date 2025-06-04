@@ -32,7 +32,7 @@ export class AuthService {
     }
 
     async test() {
-        console.log(this.JWT_CONFIG);
+        return new Date();
     }
 
     async register(registerDto: RegisterDTO) : Promise<UserResponseDTO> {

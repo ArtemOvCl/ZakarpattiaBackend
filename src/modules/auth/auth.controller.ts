@@ -8,7 +8,6 @@ import { LoginDTO } from "./dto/LoginDTO.dto";
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { UseGuards } from '@nestjs/common';
 import { JwtRefreshGuard } from "src/common/guards/jwt-refresh.guard";
-import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
 
 @Controller('auth')
 @UseGuards(ThrottlerGuard)
@@ -16,7 +15,6 @@ export class AuthController {
 
     constructor(private readonly authService: AuthService) {}
 
-    @UseGuards(JwtAuthGuard)
     @Get('test')
     async test() {
         return this.authService.test();

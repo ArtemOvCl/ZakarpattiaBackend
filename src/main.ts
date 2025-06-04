@@ -9,11 +9,17 @@ import { GlobalExceptionsFilter } from './common/filters/GlobalExcepsionsFilter'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  
   const configService = app.get(ConfigService);
 
   setupSwagger(app);
 
   app.useGlobalFilters(new GlobalExceptionsFilter());
+
+  app.enableCors({
+    origin: configService.get<string>('FRONTEND_URL'),
+    credentials: true,
+  });
 
   const port = configService.get<number>(EnvEnum.PORT);
 
